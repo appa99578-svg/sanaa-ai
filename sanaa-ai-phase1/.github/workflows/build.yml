@@ -9,20 +9,33 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: sanaa-ai
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
-      - run: gradle assembleDebug --stacktrace
+
+      - name: Find Android project and build
+        shell: bash
+        run: |
+          find . -name settings.gradle.kts
+          PROJECT=$(find . -name settings.gradle.kts -print -quit)
+          if [ -z "$PROJECT" ]; then
+            echo "Android project not found"
+            exit 1
+          fi
+          DIR=$(dirname "$PROJECT")
+          gradle -p "$DIR" assembleDebug --stacktrace
+
       - uses: actions/upload-artifact@v4
         with:
           name: sanaa-ai-debug-apk
-          path: sanaa-ai/app/build/outputs/apk/debug/*.apk
+          path: '**/build/outputs/apk/debug/*.apk'
+          if-no-files-found: error
