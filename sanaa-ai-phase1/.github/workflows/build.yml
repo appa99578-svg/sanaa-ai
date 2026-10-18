@@ -1,4 +1,3 @@
-
 name: Build SANAA AI APK
 
 on:
@@ -9,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -22,13 +20,12 @@ jobs:
         with:
           gradle-version: '8.7'
 
-      - name: Find Android project and build
+      - name: Build Android APK
         shell: bash
         run: |
-          find . -name settings.gradle.kts
           PROJECT=$(find . -name settings.gradle.kts -print -quit)
           if [ -z "$PROJECT" ]; then
-            echo "Android project not found"
+            echo "Android project not found!"
             exit 1
           fi
           DIR=$(dirname "$PROJECT")
